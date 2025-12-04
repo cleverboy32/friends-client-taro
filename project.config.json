@@ -1,0 +1,16 @@
+{
+  "miniprogramRoot": "./dist",
+  "projectname": "friends-client-mini",
+  "description": "",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "enhance": false,
+    "compileHotReLoad": false,
+    "postcss": false,
+    "minified": false
+  },
+  "initialPage": "pages/login/index",
+  "compileType": "miniprogram"
+}

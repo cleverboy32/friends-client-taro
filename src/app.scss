@@ -1,0 +1,23 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import './iconfont.css';
+
+@theme {
+    --color-theme: #b5caa0; /* 抹茶绿 */
+    --color-bg-theme: #e6eede; /* 浅抹茶绿 */
+    --color-dark-theme: rgb(106, 132, 99); /* 暗绿 */
+    --color-light-bg-theme: #e0e7d4; /* 灰调抹茶 */
+    --color-primary: #ffd166; /* 柠檬黄 */
+    --color-secondary: #fff4d6; /* 浅柠檬黄 */
+    --color-dark-primary: rgb(249, 200, 53); /* 浅黄 */
+    --color-light-primary: rgba(253, 245, 206, 0.2); /* 浅柠檬黄 */
+}
+
+body {
+    margin: 0;
+    font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+    background: #fff;
+    color: #222;
+}

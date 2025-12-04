@@ -1,0 +1,61 @@
+.upload-component {
+    width: 100%;
+}
+
+.upload-component .upload-area {
+    transition: all 0.2s ease-in-out;
+}
+
+.upload-component .upload-area:not(.has-files):hover {
+    border-color: var(--color-primary);
+}
+
+.upload-component .upload-area:not(.has-files).drag-over {
+    border-color: var(--color-primary);
+    background-color: #e6eede;
+}
+
+.upload-component .upload-area.has-files {
+    border: none !important;
+}
+
+.upload-component .file-preview {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+}
+
+.upload-component .file-preview img {
+    transition: transform 0.2s ease-in-out;
+}
+
+.upload-component .file-preview:hover img {
+    transform: scale(1.05);
+}
+
+.upload-component .remove-button {
+    transition: all 0.2s ease-in-out;
+}
+
+.upload-component .file-info {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+
+.upload-component .add-button {
+    transition: all 0.2s ease-in-out;
+}
+
+.upload-component .add-button:hover {
+    border-color: #b5caa0;
+    background-color: #e6eede;
+}
+
+.upload-component .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.upload-component .disabled:hover {
+    border-color: #e1e4e8;
+    background-color: transparent;
+}
