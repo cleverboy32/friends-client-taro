@@ -11,7 +11,25 @@ module.exports = {
       container: false,
     },
     theme: {
-      extend: {},
+      extend: {
+        colors: {
+          // 自定义主题色：抹茶绿系列
+          theme: '#b5caa0',
+          'theme-light': '#e6eede', // --color-bg-theme
+          'theme-dark': '#6a8463', // --color-dark-theme
+          'theme-muted': '#e0e7d4', // --color-light-bg-theme
+
+          // 主色：柠檬黄系列
+          primary: '#ffd166', // --color-primary
+          secondary: '#fff4d6', // --color-secondary
+          'primary-dark': '#f9c835', // --color-dark-primary (rgb(249, 200, 53))
+          'primary-light': 'rgba(253, 245, 206, 0.2)', // --color-light-primary
+
+          // 兼容旧命名（项目里有时写成 dark-primary / light-primary）
+          'dark-primary': '#f9c835',
+          'light-primary': 'rgba(253, 245, 206, 0.2)',
+        },
+      },
     },
     
     plugins: [],
