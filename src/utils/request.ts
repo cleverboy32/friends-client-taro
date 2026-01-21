@@ -45,14 +45,50 @@ const request = async <T = any>(config: any): Promise<T> => {
             },
         };
 
+        const { url, baseURL = baseConfig.baseURL, ...rest } = finalConfig;
+        const fullUrl = url.startsWith('http') ? url : `${baseURL}${url}`;
+
         const response = await Taro.request({
-            ...finalConfig,
+            ...rest,
+            url: fullUrl,
             method: (config.method || 'GET').toUpperCase() as any,
         });
 
-        if (response.header['X-Token']) {
-            Taro.setStorageSync('x-token', response.header['X-Token']);
+        // --- 登录请求调试 ---
+        const tokenHeaderKey = 'X-Token';
+        const lowercaseTokenHeaderKey = 'x-token';
+
+        console.log('----------- 登录请求调试 -----------');
+        console.log('完整的响应头 (response.header):', response.header);
+
+        const tokenToStore = response.header[tokenHeaderKey] || response.header[lowercaseTokenHeaderKey];
+        
+        if (tokenToStore) {
+            console.log('准备存储的 Token 值:', tokenToStore);
+            try {
+                Taro.setStorageSync('x-token', tokenToStore);
+                console.log('Taro.setStorageSync 调用成功！');
+
+                // 立刻读回来验证一下
+                const storedToken = Taro.getStorageSync('x-token');
+                console.log('从 Storage 中立即读回的 Token:', storedToken);
+
+                if (storedToken === tokenToStore) {
+                    console.log('✅ 验证成功：写入和读出的值一致！');
+                } else {
+                    console.error('❌ 验证失败：写入后未能正确读出！');
+                }
+            } catch (e) {
+                console.error('Taro.setStorageSync 抛出异常:', e);
+            }
+        } else {
+             // 如果这不是登录请求，这里没有 token 是正常的，所以不打印警告
+            if (url.includes('login')) { // 假设登录接口的URL路径包含'login'
+                 console.warn('警告：登录请求的响应头中未找到 X-Token 或 x-token，无法存储。');
+            }
         }
+        console.log('------------------------------------');
+        // --- 结束调试 ---
 
         // 处理响应数据
         const res = response.data as ResponseData<T>;
