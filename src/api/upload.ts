@@ -18,6 +18,6 @@ export const upload = async (file: File) => {
     formData.append('file', file);
     // 基于 request 实例拦截器，服务端需返回 { code, data, message }
     return post<UploadResponseData>('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        header: { 'Content-Type': 'multipart/form-data' },
     });
 };

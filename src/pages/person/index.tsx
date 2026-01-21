@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image } from '@tarojs/components';
+import Taro, { useDidShow, useReachBottom } from '@tarojs/taro';
 import { getActivityList } from '@/api/activity';
 import useUserStore from '@/store/user';
 import ActivityCard, { type Activity } from '@/components/ActivityCard';
@@ -11,53 +12,67 @@ const PersonPage: React.FC = () => {
     const userId = '';
     const { userInfo } = useUserStore();
     const [activities, setActivities] = useState<Activity[]>([]);
-    const [activeTab, setActiveTab] = useState<'post' | 'join' | 'collect'>('join');
+    const [activeTab, setActiveTab] = useState<'post' | 'join' | 'collect'>('post');
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(10);
+    const [hasMore, setHasMore] = useState(true);
 
     // 获取用户发布的活动数据
+    const fetchUserActivities = useCallback(async () => {
+        const user = userInfo?.id;
+        if (!user || !hasMore) return;
+        console.log('user', user, 'page', page);
+
+        try {
+            // 获取用户发布的活动
+            const response = await getActivityList({
+                authorId: user,
+                page,
+                pageSize,
+            });
+
+            const convertedActivities: Activity[] = response.items.map((item) => ({
+                id: item.id.toString(),
+                title: item.title,
+                content: item.content,
+                time: new Date(item.createdAt).toLocaleString('zh-CN'),
+                location: item.location?.address || '未知地点',
+                publisher: item.author.name,
+                avatar: item.author.avatar,
+                reward: `${Math.floor(Math.random() * 200) + 50}积分`, // 暂时随机生成积分
+                participants: Math.floor(Math.random() * 50), // 暂时随机生成参与人数
+                maxParticipants: Math.floor(Math.random() * 100) + 50, // 暂时随机生成最大参与人数
+                category: item.tags?.[0] || '其他',
+                distance: Math.random() * 20, // 暂时随机生成距离
+                coordinates: item.location
+                    ? [item.location.longitude, item.location.latitude]
+                    : [116.397428, 39.90923],
+                image:
+                    item.image?.[0] ||
+                    `https://via.placeholder.com/120x80/4ade80/ffffff?text=${item.title.charAt(
+                        0,
+                    )}`,
+            }));
+
+            setActivities((prev) => [...prev, ...convertedActivities]);
+            setHasMore(page < response.totalPages);
+            console.log(page < response.totalPages, hasMore);
+        } catch (error) {
+            console.error('获取用户活动失败:', error);
+        }
+    }, [userInfo, page, pageSize, hasMore]);
+
     useEffect(() => {
-        const fetchUserActivities = async () => {
-            if (!userId) return;
+        if (userInfo?.id) {
+            fetchUserActivities();
+        }
+    }, [userInfo, activeTab]);
 
-            try {
-                // 获取用户发布的活动
-                const response = await getActivityList({
-                    authorId: parseInt(userId),
-                    page: 1,
-                    pageSize: 20,
-                });
-
-                const convertedActivities: Activity[] = response.items.map((item) => ({
-                    id: item.id.toString(),
-                    title: item.title,
-                    content: item.content,
-                    time: new Date(item.createdAt).toLocaleString('zh-CN'),
-                    location: item.location?.address || '未知地点',
-                    publisher: item.author.name,
-                    avatar: item.author.avatar,
-                    reward: `${Math.floor(Math.random() * 200) + 50}积分`, // 暂时随机生成积分
-                    participants: Math.floor(Math.random() * 50), // 暂时随机生成参与人数
-                    maxParticipants: Math.floor(Math.random() * 100) + 50, // 暂时随机生成最大参与人数
-                    category: item.tags?.[0] || '其他',
-                    distance: Math.random() * 20, // 暂时随机生成距离
-                    coordinates: item.location
-                        ? [item.location.longitude, item.location.latitude]
-                        : [116.397428, 39.90923],
-                    image:
-                        item.image?.[0] ||
-                        `https://via.placeholder.com/120x80/4ade80/ffffff?text=${item.title.charAt(
-                            0,
-                        )}`,
-                }));
-
-                setActivities(convertedActivities);
-            } catch (error) {
-                console.error('获取用户活动失败:', error);
-                setActivities([]);
-            }
-        };
-
-        fetchUserActivities();
-    }, [userId]);
+    useReachBottom(() => {
+        if (hasMore) {
+            setPage((prev) => prev + 1);
+        }
+    });
 
     const renderEmpty = useCallback(() => {
         return (
@@ -74,12 +89,13 @@ const PersonPage: React.FC = () => {
             }
 
             return (
-                <View className="flex flex-col gap-[24px]">
+                <View className="columns-2 gap-x-2">
                     {list.map((activity) => (
-                        <ActivityCard
+                        <View
                             key={activity.id}
-                            activity={activity}
-                        />
+                            className="break-inside-avoid mb-2">
+                            <ActivityCard activity={activity} />
+                        </View>
                     ))}
                 </View>
             );
@@ -155,7 +171,7 @@ const PersonPage: React.FC = () => {
                     </View>
                 </View>
 
-                <View className="flex-1 px-[32px] pt-[40px] pb-[140px] border-t border-[#f2f4f8]">
+                <View className="flex-1 pt-[40px] pb-[140px] border-t border-[#f2f4f8]">
                     <View className="flex items-center gap-[36px] text-[28px] text-[#9aa3b6]">
                         {[
                             { id: 'post', label: '发布' },

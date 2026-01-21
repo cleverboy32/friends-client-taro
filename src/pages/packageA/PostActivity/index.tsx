@@ -1,25 +1,11 @@
 import React, { useState } from 'react';
 import Taro, { useDidShow } from '@tarojs/taro';
-import {
-    View,
-    Text,
-    Button,
-    Input,
-    Textarea,
-    Switch,
-    RadioGroup,
-    Label,
-    Radio,
-} from '@tarojs/components';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { MapPinIcon } from '@heroicons/react/24/solid';
-import LocationPicker from '@/components/LocationPicker';
+import { View, Text, Button, Input, Textarea, Switch, RadioGroup, Label, Radio } from '@tarojs/components';
 import Upload from '@/components/Upload';
 import type { UploadFile } from '@/components/Upload';
 import { createActivity } from '@/api/activity';
 import type { CreateActivityParams, Location } from '@/types/activity';
 import useUserStore from '@/store/user';
-import Navbar from '@/components/Navbar';
 import BottomBar from '@/components/BottomBar';
 import Layout from '@/components/Layout';
 
@@ -34,7 +20,6 @@ interface ActivityForm {
 }
 
 const PostActivity: React.FC = () => {
-    const [_selectedTab, setSelectedTab] = useState('topic');
     const [isPublishing, setIsPublishing] = useState(false);
     const { userInfo } = useUserStore();
 
@@ -56,14 +41,15 @@ const PostActivity: React.FC = () => {
         setForm((prev) => ({ ...prev, ...updates }));
     };
 
-    // 处理文件上传
+    // 处理文件上传（Upload 组件内部已完成上传，这里接收最新文件列表）
     const handleFileChange = (files: UploadFile[]) => {
         updateForm({ images: files });
         console.log('文件已更新:', files);
     };
 
-    // 处理文件删除
+    // 处理文件删除（确保表单状态同步）
     const handleFileRemove = (file: UploadFile) => {
+        setForm((prev) => ({ ...prev, images: prev.images.filter((f) => f.id !== file.id) }));
         console.log('文件已删除:', file);
     };
 
@@ -91,22 +77,34 @@ const PostActivity: React.FC = () => {
     const handlePublish = async () => {
         // 表单验证
         if (form.images.length === 0) {
-            alert('请至少上传一张图片');
+            Taro.showToast({
+                title: '请至少上传一张图片',
+                icon: 'none',
+            });
             return;
         }
 
         if (!form.title.trim()) {
-            alert('请填写标题');
+            Taro.showToast({
+                title: '请填写标题',
+                icon: 'none',
+            });
             return;
         }
 
         if (!form.content.trim()) {
-            alert('请填写活动内容');
+            Taro.showToast({
+                title: '请填写活动内容',
+                icon: 'none',
+            });
             return;
         }
 
-        if (!form.location) {
-            alert('请选择活动地点');
+        if (form.type === 'OFFLINE' && !form.location) {
+            Taro.showToast({
+                title: '请选择活动地点',
+                icon: 'none',
+            });
             return;
         }
 
@@ -128,54 +126,31 @@ const PostActivity: React.FC = () => {
             const response = await createActivity(activityData);
 
             if (response) {
-                alert('活动发布成功！');
-                // 跳转到活动详情页或者首页
+                Taro.showToast({
+                    title: '活动发布成功！',
+                    icon: 'success',
+                });
                 Taro.redirectTo({
-                    url: 'discover',
+                    url: '/pages/person/index',
                 });
             }
         } catch (error: any) {
             console.error('发布活动失败:', error);
             const errorMessage = error?.response?.data?.message || '发布失败，请稍后重试';
-            alert(errorMessage);
+            Taro.showToast({
+                title: errorMessage,
+                icon: 'none',
+            });
         } finally {
             setIsPublishing(false);
         }
     };
 
-    // 添加地点选择功能
-    const [showLocationPicker, setShowLocationPicker] = useState(false);
-
     const handleLocationSelect = () => {
         // 跳转到地图选择页面
         Taro.navigateTo({
-            url: '/pages/MapLocation/index'
+            url: '/pages/packageA/MapLocation/index'
         });
-    };
-
-    const handleLocationChange = (location: Location) => {
-        updateForm({ location });
-    };
-
-    // 设置位置信息（供地图页面回调使用）
-    const setLocation = (location: Location) => {
-        updateForm({ location });
-    };
-
-    // 添加标签选择功能
-    const handleTagSelect = (tagName: string) => {
-        if (form.tags.includes(tagName)) {
-            updateForm({ tags: form.tags.filter((tag) => tag !== tagName) });
-        } else if (form.tags.length < 5) {
-            // 最多选择5个标签
-            updateForm({ tags: [...form.tags, tagName] });
-        } else {
-            alert('最多只能选择5个标签');
-        }
-    };
-
-    const handleBack = () => {
-        Taro.navigateBack();
     };
 
     // 监听页面显示，检查是否有新选择的位置
@@ -193,14 +168,6 @@ const PostActivity: React.FC = () => {
         }
     });
 
-    const activityTopics = [
-        { id: 1, name: '夏天用游泳开场', type: 'activity' },
-        { id: 2, name: '21天新鲜事vlog', type: 'activity' },
-        { id: 3, name: '按下快门前的30s', type: 'activity' },
-    ];
-
-    const tabs = activityTopics; // placeholder to avoid unused warnings while feature is hidden
-
     return (
         <Layout className="p-[32px]">
             <View className="flex flex-col px-[16px] pb-[160px] flex-1">
@@ -217,7 +184,7 @@ const PostActivity: React.FC = () => {
                             <Button
                                 className="text-primary text-sm hover:text-dark-primary cursor-pointer"
                                 onClick={handleClearAll}>
-                                清空并重新上传
+                                清空
                             </Button>
                         )}
                     </View>
@@ -227,7 +194,7 @@ const PostActivity: React.FC = () => {
                         onRemove={handleFileRemove}
                         beforeUpload={beforeUpload}
                         maxCount={18}
-                        maxSize={10}
+                        maxSize={2}
                         accept="image/*"
                         buttonText="添加图片"
                     />
@@ -281,7 +248,11 @@ const PostActivity: React.FC = () => {
                             <RadioGroup
                                 onChange={(e) => {
                                     const value = e.detail.value as 'ONLINE' | 'OFFLINE';
-                                    updateForm({ type: value });
+                                    const updates: Partial<ActivityForm> = { type: value };
+                                    if (value === 'ONLINE') {
+                                        updates.location = null;
+                                    }
+                                    updateForm(updates);
                                 }}>
                                 <View className="flex items-center gap-[32px]">
                                     {[
@@ -308,23 +279,25 @@ const PostActivity: React.FC = () => {
                             </RadioGroup>
                         </View>
 
-                        <View className="rounded-[24px] bg-white/80">
-                            <View className="flex items-center justify-between ">
-                                <Text className="text-[#5c6470] text-[26px]">活动地点</Text>
-                                <View
-                                    className="text-[#f29b38] text-[28px]"
-                                    onClick={handleLocationSelect}>
-                                    {form.location ? (
-                                        <View className="flex items-center">
-                                            <Text className="text-[#2c3e50] text-[26px] mr-2">{form.location.address}</Text>
-                                            <Text className="text-[#f29b38] text-[24px]">更改</Text>
-                                        </View>
-                                    ) : (
-                                        <View className=" text-[40px] iconfont icon-dza-dingweiweizhi"></View>
-                                    )}
+                        {form.type === 'OFFLINE' && (
+                            <View className="rounded-[24px] bg-white/80">
+                                <View className="flex items-center justify-between ">
+                                    <Text className="text-[#5c6470] text-[26px]">活动地点</Text>
+                                    <View
+                                        className="text-[#f29b38] text-[28px]"
+                                        onClick={handleLocationSelect}>
+                                        {form.location ? (
+                                            <View className="flex items-center">
+                                                <Text className="text-[#2c3e50] text-[26px] mr-2">{form.location.address}</Text>
+                                                <Text className="text-[#f29b38] text-[24px]">更改</Text>
+                                            </View>
+                                        ) : (
+                                            <View className=" text-[40px] iconfont icon-dza-dingweiweizhi"></View>
+                                        )}
+                                    </View>
                                 </View>
                             </View>
-                        </View>
+                        )}
 
                         <View className="flex items-center justify-between">
                             <Text className="text-[#5c6470] text-[26px]">寻找合作伙伴</Text>
@@ -363,25 +336,20 @@ const PostActivity: React.FC = () => {
                         form.images.length === 0 ||
                         !form.title.trim() ||
                         !form.content.trim() ||
-                        !form.location
+                        (form.type === 'OFFLINE' && !form.location)
                     }
                     className={`w-full rounded-lg font-medium transition-colors mt-[24px] ${
                         !isPublishing &&
                         form.images.length > 0 &&
                         form.title.trim() &&
                         form.content.trim() &&
-                        form.location
+                        (form.type === 'ONLINE' || form.location)
                             ? 'bg-theme text-white '
                             : 'bg-gray-200 text-gray-500 '
                     }`}>
                     {isPublishing ? '发布中...' : '发布活动'}
                 </Button>
 
-                {/* <LocationPicker
-                    visible={showLocationPicker}
-                    onChange={handleLocationChange}
-                    onClose={() => setShowLocationPicker(false)}
-                /> */}
                 <BottomBar activeKey="publish" />
             </View>
         </Layout>

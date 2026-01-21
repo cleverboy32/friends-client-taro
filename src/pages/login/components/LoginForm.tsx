@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { View, Text, Input, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import useUserStore from '@/store/user';
@@ -12,11 +12,12 @@ interface Props {
     onSwitchToRegister: () => void;
 }
 
-export default function LoginForm({ onSwitchToRegister }: Props) {
+export default memo(function LoginForm({ onSwitchToRegister }: Props) {
     const [formData, setFormData] = useState<LoginFormData>({
         username: '',
         password: '',
     });
+    console.log('44')
     const { login, isLoading } = useUserStore();
 
     const handleUsernameChange = (e: any) => {
@@ -51,8 +52,8 @@ export default function LoginForm({ onSwitchToRegister }: Props) {
         if (!validateForm()) return;
 
         try {
-            await login(formData);
-            Taro.switchTab({ url: '/pages/discover/index' });
+            await login({ name: formData.username, password: formData.password });
+            Taro.navigateTo({ url: '/pages/discover/index' });
         } catch (error) {
             console.error('登录失败:', error);
         }
@@ -104,4 +105,4 @@ export default function LoginForm({ onSwitchToRegister }: Props) {
             </View>
         </View>
     );
-}
+});

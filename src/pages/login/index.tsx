@@ -3,6 +3,7 @@ import { View, Text, Image } from '@tarojs/components';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import Layout from '@/components/Layout';
+import Taro from '@tarojs/taro';
 
 const words = ['饭搭子', '游戏搭子', '自习搭子', '旅行搭子'];
 
@@ -11,10 +12,13 @@ export default function Login() {
     const [isLoginMode, setIsLoginMode] = useState(true);
 
     useEffect(() => {
-        const timer = setInterval(() => {
+        Taro.getUserInfo().then((res) => {
+            console.log(res);
+        });
+        const timer = setTimeout(() => {
             setCurrentWordIndex((prev) => (prev + 1) % words.length);
         }, 1500);
-        return () => clearInterval(timer);
+        return () => clearTimeout(timer);
     }, []);
 
     return (

@@ -36,7 +36,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
         {
             key: 'publish',
             label: '发布',
-            path: '/pages/PostActivity/index',
+            path: '/pages/packageA/PostActivity/index',
             icon: (active) => (
                 <PlusIcon
                     className={`w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
@@ -74,7 +74,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
         //     Taro.navigateTo({ url: '/pages/login/index' });
         //     return;
         // }
-
+        console.log('userInfo', userInfo);
         const target = item.key === 'profile' && !userInfo ? '/pages/login/index' : item.path;
         Taro.reLaunch({ url: target });
     };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { View, Text, Input } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import Map, { MAP_STYLES } from '../../components/Map';
 import ActivityCard, { type Activity } from '@/components/ActivityCard';
 import { getActivityList } from '@/api/activity';
@@ -90,20 +91,7 @@ const DiscoverPage: React.FC = () => {
         fetchActivities();
     }, [filter]);
 
-    const handleActivityClick = useCallback((activityId: string) => {
-        // navigate(`/discover/activity/${activityId}`);
-    }, []);
 
-    const handleMarkerClick = useCallback((marker: any) => {
-        console.log('点击地图标记:', marker);
-    }, []);
-
-    const handleSelectLocation = useCallback((location: AutoComplete.Poi) => {
-        address.current = location;
-        console.log('location', location);
-        page.current = 1;
-        fetchActivities();
-    }, []);
 
     console.log('render');
 
@@ -116,14 +104,14 @@ const DiscoverPage: React.FC = () => {
 
             {/* 活动列表区域 */}
             <View className="mt-[20px] flex-1 overflow-y-auto">
-                {/* 活动卡片网格 */}
-                <View className="flex flex-wrap">
+                {/* 活动卡片瀑布流 */}
+                <View className="columns-2 gap-x-2">
                     {activities.map((activity) => (
-                        <ActivityCard
+                        <View
                             key={activity.id}
-                            activity={activity}
-                            onClick={handleActivityClick}
-                        />
+                            className="break-inside-avoid mb-2">
+                            <ActivityCard activity={activity} />
+                        </View>
                     ))}
                 </View>
 

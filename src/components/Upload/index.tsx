@@ -70,18 +70,48 @@ const Upload: React.FC<UploadProps> = ({
             const newFiles: UploadFile[] = [];
 
             for (const tempFile of tempFiles) {
-                // 检查文件大小
-                if (maxSize && tempFile.size > maxSize * 1024 * 1024) {
+                let filePath = tempFile.path;
+                let fileSize = tempFile.size;
+
+                // 若超出大小限制，先尝试压缩
+                if (maxSize && fileSize > maxSize * 1024 * 1024) {
+                    try {
+                        const compressed = await Taro.compressImage({
+                            src: tempFile.path,
+                            quality: 70, // 降低质量以缩小体积
+                        });
+                        const info = await Taro.getFileInfo({ filePath: compressed.tempFilePath });
+                        filePath = compressed.tempFilePath;
+                        // getFileInfo 类型里包含失败类型，这里做属性判断
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-expect-error size 存在于成功结果上
+                        const nextSize = info.size;
+                        if (typeof nextSize === 'number') {
+                            fileSize = nextSize;
+                        } else {
+                            throw new Error('获取压缩后文件信息失败');
+                        }
+                    } catch (err) {
+                        Taro.showToast({
+                            title: '压缩失败，已跳过该文件',
+                            icon: 'none',
+                        });
+                        continue;
+                    }
+                }
+
+                // 压缩后仍然超出限制则跳过
+                if (maxSize && fileSize > maxSize * 1024 * 1024) {
                     Taro.showToast({
-                        title: `文件大小不能超过 ${maxSize}MB`,
+                        title: `文件需小于 ${maxSize}MB`,
                         icon: 'none',
                     });
                     continue;
                 }
 
-                // beforeUpload验证
+                // beforeUpload验证（传入压缩后的信息）
                 if (beforeUpload) {
-                    const shouldUpload = await beforeUpload(tempFile);
+                    const shouldUpload = await beforeUpload({ path: filePath, size: fileSize });
                     if (!shouldUpload) {
                         continue;
                     }
@@ -89,11 +119,11 @@ const Upload: React.FC<UploadProps> = ({
 
                 const uploadFile: UploadFile = {
                     id: generateId(),
-                    url: tempFile.path,
+                    url: filePath,
                     name: `image_${Date.now()}.jpg`,
-                    size: tempFile.size,
+                    size: fileSize,
                     type: 'image/jpeg',
-                    tempFilePath: tempFile.path,
+                    tempFilePath: filePath,
                 };
 
                 newFiles.push(uploadFile);

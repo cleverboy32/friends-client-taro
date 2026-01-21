@@ -20,7 +20,9 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
         sourceRoot: 'src',
         outputRoot: 'dist',
         plugins: ['@tarojs/plugin-generator'],
-        defineConstants: {},
+        defineConstants: {
+            "process.env.TARO_APP_AMAP_KEY": JSON.stringify('9603019f37fa61cebf61d7c3fe442f40'),
+        },
         framework: 'react',
         compiler: {
             type: 'webpack5',

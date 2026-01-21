@@ -17,7 +17,7 @@ export const getActivityList = (params: ActivityQueryParams = {}) => {
         items: Activity[];
         total: number;
         page: number;
-        totalPage: number;
+        totalPages: number;
     }>('/activity/list', params);
 };
 
