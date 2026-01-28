@@ -93,16 +93,9 @@ const DiscoverPage: React.FC = () => {
 
 
 
-    console.log('render');
 
     return (
-        <Layout className="px-[8px] pt-[60px] pb-[140px] bg-white">
-            <Navbar
-                title="发现"
-                right={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
-            />
-
-            {/* 活动列表区域 */}
+        <Layout className=" bg-white overflow-hidden h-[100vh]">
             <View className="mt-[20px] flex-1 overflow-y-auto">
                 {/* 活动卡片瀑布流 */}
                 <View className="columns-2 gap-x-2">

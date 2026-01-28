@@ -1,11 +1,5 @@
 export default defineAppConfig({
-    pages: [
-        'pages/notifications/index',
-        'pages/discover/index',
-        'pages/login/index',
-        'pages/person/index',
-        'pages/message/index',
-    ],
+    pages: ['pages/discover/index', 'pages/login/index', 'pages/person/index'],
     subPackages: [
         {
             root: 'pages/packageA',
@@ -15,9 +9,14 @@ export default defineAppConfig({
                 'MapLocation/index',
             ],
         },
+        {
+            root: 'pages/packageB',
+            pages: ['notifications/index', 'message/index'],
+        },
     ],
     window: {
         backgroundTextStyle: 'light',
+        backgroundColor: '#b5caa0',
         navigationBarBackgroundColor: '#fff',
         navigationBarTitleText: 'WeChat',
         navigationBarTextStyle: 'black',

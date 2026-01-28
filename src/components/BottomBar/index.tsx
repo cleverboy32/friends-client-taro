@@ -47,7 +47,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
         {
             key: 'notifications',
             label: '通知',
-            path: '/pages/notifications/index',
+            path: '/pages/packageB/notifications/index',
             icon: (active) => (
                 <BellIcon
                     className={`w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
@@ -76,7 +76,12 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
         // }
         console.log('userInfo', userInfo);
         const target = item.key === 'profile' && !userInfo ? '/pages/login/index' : item.path;
-        Taro.reLaunch({ url: target });
+
+        if (item.key === 'publish') {
+            Taro.navigateTo({ url: target });
+        } else {
+            Taro.reLaunch({ url: target });
+        }
     };
 
     const getBottomHeight = () => {
@@ -85,6 +90,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
             const { safeArea, screenHeight } = Taro.getWindowInfo();
             height = screenHeight - (safeArea?.bottom ?? 0);
         }
+        console.log(height)
         setBottomHeight(height);
     };
 
@@ -94,33 +100,27 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
 
     return (
         <View
-            className="fixed bottom-0 left-[-20px] right-[-20px] z-50 pb-[24px] flex-1"
+            className="bg-[#cadcae] flex items-center justify-around py-[24px]"
             style={{
-                bottom: `-${bottomHeight}px`,
+                paddingBottom:  bottomHeight,
             }}>
-            <View
-                className="mx-[16px] bg-[#cadcae] flex items-center justify-around py-[24px]"
-                style={{
-                    paddingBottom: 2 * bottomHeight,
-                }}>
-                {navItems.map((item) => {
-                    const active = item.key === activeKey;
-                    return (
-                        <View
-                            key={item.key}
-                            className="flex-1 flex flex-col items-center justify-center gap-[6px]"
-                            onClick={() => handleNavClick(item)}>
-                            {item.icon(active)}
-                            <Text
-                                className={`text-[22px] ${
-                                    active ? 'text-[#f5a623]' : 'text-white'
-                                }`}>
-                                {item.label}
-                            </Text>
-                        </View>
-                    );
-                })}
-            </View>
+            {navItems.map((item) => {
+                const active = item.key === activeKey;
+                return (
+                    <View
+                        key={item.key}
+                        className="flex-1 flex flex-col items-center justify-center gap-[6px]"
+                        onClick={() => handleNavClick(item)}>
+                        {item.icon(active)}
+                        <Text
+                            className={`text-[24px] ${
+                                active ? 'text-[#f5a623]' : 'text-white'
+                            }`}>
+                            {item.label}
+                        </Text>
+                    </View>
+                );
+            })}
         </View>
     );
 };

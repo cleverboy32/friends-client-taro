@@ -6,7 +6,6 @@ import type { UploadFile } from '@/components/Upload';
 import { createActivity } from '@/api/activity';
 import type { CreateActivityParams, Location } from '@/types/activity';
 import useUserStore from '@/store/user';
-import BottomBar from '@/components/BottomBar';
 import Layout from '@/components/Layout';
 
 interface ActivityForm {
@@ -169,14 +168,8 @@ const PostActivity: React.FC = () => {
     });
 
     return (
-        <Layout className="p-[32px]">
+        <Layout className="p-[32px]" showBottomSafeArea>
             <View className="flex flex-col px-[16px] pb-[160px] flex-1">
-                {/* <Navbar
-                    left={<ArrowLeftIcon className="w-5 h-5" />}
-                    title="发布活动"
-                    onClickLeft={handleBack}
-                /> */}
-
                 <View className=" rounded-lg  mb-[16px]">
                     <View className="flex items-center justify-between mb-4">
                         <Text className="text-lg font-medium"></Text>
@@ -349,8 +342,6 @@ const PostActivity: React.FC = () => {
                     }`}>
                     {isPublishing ? '发布中...' : '发布活动'}
                 </Button>
-
-                <BottomBar activeKey="publish" />
             </View>
         </Layout>
     );

@@ -67,7 +67,7 @@ const ActivityDetail: React.FC = () => {
                 name: userInfo.name
             })
             Taro.navigateTo({
-                url: '/pages/notifications/index',
+                url: '/pages/packageB/notifications/index',
             });
         }
     };

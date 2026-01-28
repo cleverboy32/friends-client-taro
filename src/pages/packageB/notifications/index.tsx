@@ -8,26 +8,26 @@ const NotificationsPage = () => {
     const { chatList } = useChatStore();
 
     return (
-        <Layout className="px-[8px] pt-[60px] pb-[140px] bg-white">
-            <View className="px-[24px]">
+        <Layout className=" bg-white h-[100vh] overflow-hidden">
+            <View className="flex-1">
                 {chatList.length > 0 ? (
-                    <View className="rounded-[24px] bg-white shadow-[0_12px_30px_rgba(183,193,210,0.35)] px-[28px] py-[20px]">
+                    <View className="rounded-[24px] py-[20px]">
                         {chatList.map(chatUser => (
                             <View
                                 key={chatUser.toId}
-                                className="py-[20px] border-b border-gray-100 last:border-b-0 flex items-center"
+                                className="py-[20px] px-[20px] border-t border-gray-100 last:border-b flex items-center"
                                 onClick={() => {
                                     Taro.navigateTo({
-                                        url: `/pages/message/index?toId=${chatUser.toId}`,
+                                        url: `/pages/packageB/message/index?toId=${chatUser.toId}`,
                                     })
                                 }}
                             >
                                 <Image
                                     src={chatUser.toUser.avatar}
-                                    className="w-[40px] h-[40px] rounded-full mr-[12px]"
+                                    className="w-[60px] h-[60px] rounded-full mr-[12px]"
                                 />
                                 <View className="flex-1">
-                                    <Text className="text-[26px] text-[#2c3140] truncate">
+                                    <Text className="text-[32px] text-[#2c3140] truncate">
                                         {chatUser.toUser.name}
                                     </Text>
                                 </View>
@@ -36,7 +36,7 @@ const NotificationsPage = () => {
                     </View>
                 ) : (
                     <View className="rounded-[24px] bg-white shadow-[0_12px_30px_rgba(183,193,210,0.35)] px-[28px] py-[40px] text-center text-[#a0a7b8] text-[26px]">
-                        暂时还没有新的通知
+                        暂时还没有消息
                     </View>
                 )}
             </View>

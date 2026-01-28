@@ -51,7 +51,7 @@ const Layout = ({
     children,
     className = '',
     showTopSafeArea = true,
-    showBottomSafeArea = true,
+    showBottomSafeArea = false,
 }: LayoutProps) => {
     const [safeInsets, setSafeInsets] = useState<SafeInsets>(() => getSafeInsets());
 
@@ -66,9 +66,7 @@ const Layout = ({
     }, [safeInsets, showTopSafeArea, showBottomSafeArea]);
 
     return (
-        <View
-            className={`min-h-screen flex flex-col box-border ${className}`}
-            style={containerStyle}>
+        <View className={`min-h-screen flex flex-col box-border ${className}`} style={containerStyle}>
             {children}
         </View>
     );
