@@ -46,6 +46,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
         },
         mini: {
             enableSourceMap: true, // 开启 source map
+            debugReact: true,
             webpackChain(chain, webpack) {
                 chain.merge({
                     plugin: {

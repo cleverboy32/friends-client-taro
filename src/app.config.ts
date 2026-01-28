@@ -1,9 +1,10 @@
 export default defineAppConfig({
     pages: [
-        'pages/person/index',
+        'pages/notifications/index',
         'pages/discover/index',
         'pages/login/index',
-        'pages/notifications/index',
+        'pages/person/index',
+        'pages/message/index',
     ],
     subPackages: [
         {

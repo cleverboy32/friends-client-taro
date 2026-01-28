@@ -67,9 +67,9 @@ const Layout = ({
 
     return (
         <View
-            className={`min-h-screen flex flex-col ${className}`}
+            className={`min-h-screen flex flex-col box-border ${className}`}
             style={containerStyle}>
-            <View className="flex-1 flex flex-col">{children}</View>
+            {children}
         </View>
     );
 };

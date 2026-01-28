@@ -7,6 +7,7 @@ import {
     getUserInfo as getUserInfoApi,
 } from '@/api/user';
 import type { LoginParams, RegisterParams } from '@/types/user';
+import Taro from '@tarojs/taro';
 
 interface UserState {
     // 状态
@@ -15,7 +16,7 @@ interface UserState {
 
     // 方法
     setUserInfo: (userInfo: UserInfo | null) => void;
-    getUserInfo: () => Promise<void>;
+    getUserInfo: () => Promise<UserInfo>;
     login: (params: LoginParams) => Promise<void>;
     register: (params: RegisterParams) => Promise<void>;
     logout: () => Promise<void>;
@@ -34,8 +35,10 @@ const useUserStore = create<UserState>((set, get) => ({
     getUserInfo: async () => {
         try {
             set({ isLoading: true });
-            const data = await getUserInfoApi();
+            const code = await Taro.login();
+            const data = await getUserInfoApi(code);
             set({ userInfo: data });
+            return data;
         } catch (error) {
             // 如果获取用户信息失败，清除用户信息
             get().clearUserInfo();

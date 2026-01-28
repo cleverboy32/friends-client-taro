@@ -3,7 +3,7 @@ import type { UserInfo, LoginParams, RegisterParams, UpdateUserParams } from '@/
 
 // 用户登录
 export const login = (data: LoginParams) => {
-    return post<UserInfo>('/user/login', data);
+    return post<UserInfo>('/weapp/login', data);
 };
 
 // 用户注册
@@ -17,8 +17,8 @@ export const logout = () => {
 };
 
 // 获取用户信息
-export const getUserInfo = () => {
-    return get<UserInfo>('/user/info');
+export const getUserInfo = (code: string) => {
+    return get<UserInfo>('/user/info', code);
 };
 
 // 更新用户信息

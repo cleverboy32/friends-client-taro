@@ -6,3 +6,6 @@ node_modules/
 .DS_Store
 .swc
 *.local
+
+export https_proxy=http://127.0.0.1:7897
+export GEMINI_API_KEY="AIzaSyArRCfGvlsP1L2WKg6NNoWnKhM6ZhZZbSg"

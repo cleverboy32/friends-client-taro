@@ -13,6 +13,8 @@ export interface UserInfo {
 export interface LoginParams {
     name: string;
     password: string;
+    avatar?: string;
+    openId?: string;
 }
 
 export interface RegisterParams extends LoginParams {

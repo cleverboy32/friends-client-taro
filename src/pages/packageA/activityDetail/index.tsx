@@ -7,10 +7,14 @@ import Navbar from '@/components/Navbar';
 import Layout from '@/components/Layout';
 import { ClockIcon, MapPinIcon, UserGroupIcon } from '@heroicons/react/24/solid';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import useChatStore from '@/store/chat';
+import useUserStore from '@/store/user';
 
 const ActivityDetail: React.FC = () => {
     const [activity, setActivity] = useState<Activity | null>(null);
     const [loading, setLoading] = useState(true);
+    const { addOrUpdateChatUser } = useChatStore();
+    const { userInfo } = useUserStore();
 
     useEffect(() => {
         const pages = Taro.getCurrentPages();
@@ -50,6 +54,22 @@ const ActivityDetail: React.FC = () => {
 
     const handleBack = () => {
         Taro.navigateBack();
+    };
+
+    const handleGoToChat = () => {
+        if (activity?.author && userInfo) {
+            addOrUpdateChatUser({
+                id: activity.author.id,
+                name: activity.author.name,
+                avatar: activity.author.avatar
+            }, {
+                id: userInfo.id,
+                name: userInfo.name
+            })
+            Taro.navigateTo({
+                url: '/pages/notifications/index',
+            });
+        }
     };
 
     if (loading) {
@@ -115,6 +135,10 @@ const ActivityDetail: React.FC = () => {
                                 {activity.author?.name || '未知用户'}
                             </Text>
                         </View>
+                        <Text
+                            className="iconfont icon-dzxiaoxi text-[24px] text-gray-500"
+                            onClick={handleGoToChat}
+                        />
                     </View>
 
                     {/* 活动信息卡片 */}
