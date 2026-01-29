@@ -3,7 +3,6 @@ import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { getActivityDetail } from '@/api/activity';
 import type { Activity } from '@/types/activity';
-import Navbar from '@/components/Navbar';
 import Layout from '@/components/Layout';
 import useChatStore from '@/store/chat';
 import useUserStore from '@/store/user';
@@ -73,7 +72,6 @@ const ActivityDetail: React.FC = () => {
     if (loading) {
         return (
             <Layout>
-                <Navbar title="活动详情" onClickLeft={handleBack} />
                 <View className="flex-1 flex items-center justify-center">
                     <Text className="text-gray-400">加载中...</Text>
                 </View>
@@ -84,7 +82,6 @@ const ActivityDetail: React.FC = () => {
     if (!activity) {
         return (
             <Layout>
-                <Navbar title="活动详情" onClickLeft={handleBack} />
                 <View className="flex-1 flex items-center justify-center">
                     <Text className="text-gray-400">活动不存在</Text>
                 </View>
@@ -94,16 +91,28 @@ const ActivityDetail: React.FC = () => {
 
     return (
         <Layout className="bg-white px-[8px] pt-[60px]">
-            <Navbar title="活动详情" onClickLeft={handleBack} />
             <ScrollView className="flex-1" scrollY>
                 {/* 图片区域 */}
-                {activity.image && activity.image.length > 0 && (
+                {activity.image && activity.image.length > 0 ? (
                     <View className="w-full max-h-[80%] relative">
                         <Image
                             src={activity.image[0]}
                             mode="widthFix"
                             className="w-full h-full"
                         />
+                    </View>
+                ): (
+                    <View
+                        className="flex items-center justify-center rounded-lg border min-h-[100px] p-2"
+                        style={{ borderColor: 'rgba(224, 231, 212, 0.6)' }}>
+                        <View className="text-lg">
+                            <Text className="bg-clip-text text-transparent bg-[linear-gradient(90deg,#FF4D4F,#FAAD14,#52C41A,#13C2C2,#1677FF,#722ED1,#EB2F96)]">
+                                {activity.title}
+                            </Text>
+                            <Text className="text-[28px] text-gray-500 mt-[10px] line-clamp-2">
+                                {activity.content}
+                            </Text>
+                        </View>
                     </View>
                 )}
 

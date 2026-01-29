@@ -1,4 +1,5 @@
 import { post } from '@/utils/request';
+import Taro from '@tarojs/taro';
 
 export interface UploadResponseData {
     imageUrl: string;
@@ -20,4 +21,21 @@ export const upload = async (file: File) => {
     return post<UploadResponseData>('/upload', formData, {
         header: { 'Content-Type': 'multipart/form-data' },
     });
+};
+
+export const taroUpload = async (filePath: string) => {
+    const token = Taro.getStorageSync('x-token');
+    const uploadRes = await Taro.uploadFile({
+        url: 'https://www.meetu.online/api/upload',
+        filePath,
+        name: 'file',
+        header: {
+            Authorization: token || '',
+        },
+    });
+    return JSON.parse(uploadRes.data) as {
+        code: number;
+        data: UploadResponseData;
+        message: string;
+    };
 };

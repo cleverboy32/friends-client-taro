@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, Input } from '@tarojs/components';
+import { View, Text, Input, Switch } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import ActivityCard, { type Activity } from '@/components/ActivityCard';
 import { getActivityList } from '@/api/activity';
@@ -11,7 +11,7 @@ import Layout from '@/components/Layout';
 const DiscoverPage: React.FC = () => {
     const address = useRef<AutoComplete.Poi>(null);
     const [filter, setFilter] = useState<ActivityQueryParams>({
-        type: 'OFFLINE',
+        type: '',
         distance: '1000',
         timeRange: '7',
     });
@@ -24,8 +24,11 @@ const DiscoverPage: React.FC = () => {
 
     // 使用 useCallback 优化 filter 变化处理函数
     const handleFilterChange = useCallback(
-        (key: keyof ActivityQueryParams, value: string | number) => {
-            setFilter((prev) => ({ ...prev, [key]: value }));
+        (key: keyof ActivityQueryParams, value: string | number | boolean | undefined) => {
+            setFilter((prev) => {
+                const newValue = prev[key] === value ? undefined : value;
+                return { ...prev, [key]: newValue };
+            });
             page.current = 1; // 重置页码
         },
         [],
@@ -50,8 +53,9 @@ const DiscoverPage: React.FC = () => {
                 title: item.title,
                 content: item.content,
                 time: new Date(item.createdAt).toLocaleString('zh-CN'),
-                location: item.location?.address || '未知地点',
+                location: item.location?.address || '',
                 publisher: item.author?.name,
+                publisherId: item.author?.id,
                 avatar: item.author?.avatar,
                 reward: `${Math.floor(Math.random() * 200) + 50}积分`, // 暂时随机生成积分
                 participants: Math.floor(Math.random() * 50), // 暂时随机生成参与人数
@@ -61,9 +65,7 @@ const DiscoverPage: React.FC = () => {
                 coordinates: item.location
                     ? [item.location.longitude, item.location.latitude]
                     : [116.397428, 39.90923],
-                image:
-                    item.image?.[0] ||
-                    `https://via.placeholder.com/120x80/4ade80/ffffff?text=${item.title.charAt(0)}`,
+                image: item.image?.[0]
             }));
 
             if (page.current === 1) {
@@ -96,6 +98,75 @@ const DiscoverPage: React.FC = () => {
 
     return (
         <Layout className=" bg-white overflow-hidden h-[100vh]">
+            <View className="px-4 pb-4">
+                <View className="relative mb-4">
+                    <Input
+                        className="w-full box-border h-[80px] bg-gray-100 rounded-full pl-[40px] pr-4 py-2 text-sm"
+                        placeholder="搜索活动"
+                        onConfirm={(e) => handleFilterChange('keyword', e.detail.value)}
+                    />
+                    <View className="absolute top-1/2 left-3 transform -translate-y-1/2">
+                        <Text className="iconfont icon-sousuo text-gray-400"></Text>
+                    </View>
+                </View>
+
+                {/* 筛选区域 */}
+                <View className="flex flex-col gap-4">
+                    <View className="flex items-center">
+                        <View className="flex gap-2">
+                            <Text
+                                className={`px-3 py-1 text-sm rounded-full ${
+                                    filter.type === 'OFFLINE'
+                                        ? 'bg-primary text-white'
+                                        : 'bg-gray-100'
+                                }`}
+                                onClick={() => handleFilterChange('type', 'OFFLINE')}>
+                                线下
+                            </Text>
+                            <Text
+                                className={`px-3 py-1 text-sm rounded-full ${
+                                    filter.type === 'ONLINE' ? 'bg-primary text-white' : 'bg-gray-100'
+                                }`}
+                                onClick={() => handleFilterChange('type', 'ONLINE')}>
+                                线上
+                            </Text>
+                        </View>
+                    </View>
+                    {/* <View className="flex items-center">
+                        <Text className="text-sm font-medium mr-4">时间:</Text>
+                        <View className="flex gap-2">
+                            <Text
+                                className={`px-3 py-1 text-sm rounded-full ${
+                                    filter.timeRange === '1' ? 'bg-primary text-white' : 'bg-gray-100'
+                                }`}
+                                onClick={() => handleFilterChange('timeRange', '1')}>
+                                近24小时
+                            </Text>
+                            <Text
+                                className={`px-3 py-1 text-sm rounded-full ${
+                                    filter.timeRange === '3' ? 'bg-primary text-white' : 'bg-gray-100'
+                                }`}
+                                onClick={() => handleFilterChange('timeRange', '3')}>
+                                近3天
+                            </Text>
+                            <Text
+                                className={`px-3 py-1 text-sm rounded-full ${
+                                    filter.timeRange === '7' ? 'bg-primary text-white' : 'bg-gray-100'
+                                }`}
+                                onClick={() => handleFilterChange('timeRange', '7')}>
+                                近7天
+                            </Text>
+                        </View>
+                    </View> */}
+                    {/* <View className="flex items-center justify-between">
+                        <Text className="text-sm font-medium">需要伙伴:</Text>
+                        <Switch
+                            checked={filter.needPartner}
+                            onChange={(e) => handleFilterChange('needPartner', e.detail.value)}
+                        />
+                    </View> */}
+                </View>
+            </View>
             <View className="mt-[20px] flex-1 overflow-y-auto">
                 {/* 活动卡片瀑布流 */}
                 <View className="columns-2 gap-x-2">

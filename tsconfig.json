@@ -31,6 +31,6 @@
       "@/store/*":["./src/store/*"],
     }
   },
-  "include": ["./src", "./types", "./config"],
+  "include": ["./src", "./types", "node_modules/@tarojs/taro/types/index.d.ts", "./config"],
   "compileOnSave": false
 }

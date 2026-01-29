@@ -6,15 +6,47 @@ import useUserStore from '@/store/user';
 import ActivityCard, { type Activity } from '@/components/ActivityCard';
 import BottomBar from '@/components/BottomBar';
 import Layout from '@/components/Layout';
+import { taroUpload } from '@/api/upload';
+import { updateUser } from '@/api/user';
 
 const PersonPage: React.FC = () => {
     const userId = '';
-    const { userInfo } = useUserStore();
+    const { userInfo, setUserInfo } = useUserStore();
     const [activities, setActivities] = useState<Activity[]>([]);
     const [activeTab, setActiveTab] = useState<'post' | 'join' | 'collect'>('post');
     const [page, setPage] = useState(1);
     const [pageSize] = useState(10);
     const [hasMore, setHasMore] = useState(true);
+
+    const handleAvatarClick = async () => {
+        try {
+            const { tempFilePaths } = await Taro.chooseImage({
+                count: 1,
+                sizeType: ['compressed'],
+                sourceType: ['album', 'camera'],
+            });
+
+            if (tempFilePaths.length > 0) {
+                Taro.showLoading({ title: '上传中...' });
+                const result = await taroUpload(tempFilePaths[0]);
+                if (result.code === 200) {
+                    const newAvatarUrl = result.data.imageUrl;
+                    // 更新用户信息
+                    await updateUser({ id: userInfo!.id, avatar: newAvatarUrl });
+                    // 更新store
+                    setUserInfo({ ...userInfo!, avatar: newAvatarUrl });
+                    Taro.showToast({ title: '头像更新成功', icon: 'success' });
+                } else {
+                    throw new Error(result.message);
+                }
+            }
+        } catch (error) {
+            console.error('更新头像失败:', error);
+            Taro.showToast({ title: '更新失败，请重试', icon: 'none' });
+        } finally {
+            Taro.hideLoading();
+        }
+    };
 
     // 获取用户发布的活动数据
     const fetchUserActivities = useCallback(async () => {
@@ -35,8 +67,9 @@ const PersonPage: React.FC = () => {
                 title: item.title,
                 content: item.content,
                 time: new Date(item.createdAt).toLocaleString('zh-CN'),
-                location: item.location?.address || '未知地点',
+                location: item.location?.address || '',
                 publisher: item.author.name,
+                publisherId: item.author.id,
                 avatar: item.author.avatar,
                 reward: `${Math.floor(Math.random() * 200) + 50}积分`, // 暂时随机生成积分
                 participants: Math.floor(Math.random() * 50), // 暂时随机生成参与人数
@@ -46,11 +79,7 @@ const PersonPage: React.FC = () => {
                 coordinates: item.location
                     ? [item.location.longitude, item.location.latitude]
                     : [116.397428, 39.90923],
-                image:
-                    item.image?.[0] ||
-                    `https://via.placeholder.com/120x80/4ade80/ffffff?text=${item.title.charAt(
-                        0,
-                    )}`,
+                image: item.image?.[0],
             }));
 
             setActivities((prev) => [...prev, ...convertedActivities]);
@@ -124,12 +153,10 @@ const PersonPage: React.FC = () => {
             <View className="flex flex-col pb-[140px] flex-1 px-[24px]">
                 <View className="pb-[24px]">
                     <View>
-                        <View className="flex items-center justify-between px-[28px] py-[22px] border-b border-[#f2f4f8]">
-                            <Text className="iconfont icon-more w-[36px] h-[36px] text-[#9aa6be]"></Text>
-                        </View>
-
                         <View className="px-[28px] py-[26px] flex items-center gap-[24px]">
-                            <View className="w-[160px] h-[160px] rounded-full bg-[#f4f6fb] flex items-center justify-center overflow-hidden">
+                            <View
+                                className="w-[160px] h-[160px] rounded-full bg-[#f4f6fb] flex items-center justify-center overflow-hidden"
+                                onClick={handleAvatarClick}>
                                 {userInfo?.avatar ? (
                                     <Image
                                         src={userInfo.avatar}

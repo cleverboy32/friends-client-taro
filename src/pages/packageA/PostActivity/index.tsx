@@ -14,7 +14,7 @@ interface ActivityForm {
     type: 'ONLINE' | 'OFFLINE';
     needPartner: boolean;
     images: UploadFile[];
-    location: Location | null;
+    location?: Location;
     tags: string[];
 }
 
@@ -31,7 +31,7 @@ const PostActivity: React.FC = () => {
         type: 'OFFLINE',
         needPartner: true,
         images: [],
-        location: null,
+        location: undefined,
         tags: [],
     });
 
@@ -75,14 +75,6 @@ const PostActivity: React.FC = () => {
     // 发布内容
     const handlePublish = async () => {
         // 表单验证
-        if (form.images.length === 0) {
-            Taro.showToast({
-                title: '请至少上传一张图片',
-                icon: 'none',
-            });
-            return;
-        }
-
         if (!form.title.trim()) {
             Taro.showToast({
                 title: '请填写标题',
@@ -243,7 +235,7 @@ const PostActivity: React.FC = () => {
                                     const value = e.detail.value as 'ONLINE' | 'OFFLINE';
                                     const updates: Partial<ActivityForm> = { type: value };
                                     if (value === 'ONLINE') {
-                                        updates.location = null;
+                                        updates.location = undefined;
                                     }
                                     updateForm(updates);
                                 }}>
@@ -326,7 +318,6 @@ const PostActivity: React.FC = () => {
                     onClick={handlePublish}
                     disabled={
                         isPublishing ||
-                        form.images.length === 0 ||
                         !form.title.trim() ||
                         !form.content.trim() ||
                         (form.type === 'OFFLINE' && !form.location)
