@@ -20,7 +20,7 @@ const computeInsets = (
     statusBarHeight?: number,
     screenHeight?: number,
 ): SafeInsets => {
-    const top = safeArea?.top ?? statusBarHeight ?? 0;
+    const top = safeArea?.top || statusBarHeight || 0;
     if (safeArea && typeof screenHeight === 'number') {
         return {
             top,

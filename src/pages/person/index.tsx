@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image } from '@tarojs/components';
-import Taro, { useDidShow, useReachBottom } from '@tarojs/taro';
+import Taro, { useReachBottom } from '@tarojs/taro';
 import { getActivityList } from '@/api/activity';
 import useUserStore from '@/store/user';
 import ActivityCard, { type Activity } from '@/components/ActivityCard';
-import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import BottomBar from '@/components/BottomBar';
 import Layout from '@/components/Layout';
 
@@ -126,7 +125,7 @@ const PersonPage: React.FC = () => {
                 <View className="pb-[24px]">
                     <View>
                         <View className="flex items-center justify-between px-[28px] py-[22px] border-b border-[#f2f4f8]">
-                            <EllipsisHorizontalIcon className="w-[36px] h-[36px] text-[#9aa6be]" />
+                            <Text className="iconfont icon-more w-[36px] h-[36px] text-[#9aa6be]"></Text>
                         </View>
 
                         <View className="px-[28px] py-[26px] flex items-center gap-[24px]">

@@ -1,6 +1,7 @@
 import { defineConfig, type UserConfigExport } from '@tarojs/cli';
 import { UnifiedWebpackPluginV5 } from 'weapp-tailwindcss/webpack';
 import path from 'node:path';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import devConfig from './dev';
 import prodConfig from './prod';
@@ -48,6 +49,13 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
             enableSourceMap: true, // 开启 source map
             debugReact: true,
             webpackChain(chain, webpack) {
+                chain.plugin('analyzer').use(
+                    new BundleAnalyzerPlugin({
+                        analyzerMode: 'static',
+                        openAnalyzer: false,
+                        reportFilename: 'report.html',
+                    }),
+                );
                 chain.merge({
                     plugin: {
                         install: {

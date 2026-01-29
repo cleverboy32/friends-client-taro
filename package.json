@@ -39,7 +39,6 @@
   "author": "",
   "dependencies": {
     "@babel/runtime": "^7.24.4",
-    "@heroicons/react": "^2.2.0",
     "@tarojs/plugin-platform-alipay": "^3.6.23",
     "@tarojs/plugin-platform-h5": "^3.6.23",
     "@tarojs/plugin-platform-harmony-hybrid": "^3.6.23",
@@ -91,6 +90,7 @@
     "terser": "^5.30.4",
     "typescript": "^5.4.5",
     "weapp-tailwindcss": "3.6.2",
-    "webpack": "^5.103.0"
+    "webpack": "^5.103.0",
+    "webpack-bundle-analyzer": "^5.2.0"
   }
 }

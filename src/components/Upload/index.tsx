@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import Taro from '@tarojs/taro';
 import { View, Image, Text } from '@tarojs/components';
-import { PlusIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import './Upload.css';
 
 export interface UploadFile {
@@ -201,7 +200,7 @@ const Upload: React.FC<UploadProps> = ({
     const renderButton = useCallback(() => {
         return (
             <View className="flex flex-col items-center justify-center py-[64px]">
-                <PhotoIcon className="w-[96px] h-[96px] text-[#c8c8c8] mb-[16px]" />
+                <Text className="iconfont icon-tianjiatupian w-[96px] h-[96px] text-[#c8c8c8] mb-[16px]"></Text>
                 <Text className="text-[#5c6470] text-[26px] mb-[8px]">点击上传图片</Text>
                 <Text className="text-[22px] text-[#c8c8c8]">
                     支持 {accept} 格式，最大 {maxSize}MB
@@ -230,7 +229,7 @@ const Upload: React.FC<UploadProps> = ({
                                 e.stopPropagation();
                                 handleRemove(file);
                             }}>
-                            <XMarkIcon className="w-[24px] h-[24px] text-white" />
+                            <Text className="iconfont icon-close w-[24px] h-[24px] text-white"></Text>
                         </View>
                     </View>
                 ))}
@@ -239,7 +238,7 @@ const Upload: React.FC<UploadProps> = ({
                     <View
                         className="aspect-square border-2 border-dashed border-[#e5e7eb] rounded-[16px] flex flex-col items-center justify-center"
                         onClick={handleChooseImage}>
-                        <PlusIcon className="w-[48px] h-[48px] text-[#c8c8c8]" />
+                        <Text className="iconfont icon-plus w-[48px] h-[48px] text-[#c8c8c8]"></Text>
                         <Text className="text-[22px] text-[#c8c8c8] mt-[8px]">{buttonText}</Text>
                     </View>
                 )}

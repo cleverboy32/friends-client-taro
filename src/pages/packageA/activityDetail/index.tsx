@@ -5,8 +5,6 @@ import { getActivityDetail } from '@/api/activity';
 import type { Activity } from '@/types/activity';
 import Navbar from '@/components/Navbar';
 import Layout from '@/components/Layout';
-import { ClockIcon, MapPinIcon, UserGroupIcon } from '@heroicons/react/24/solid';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import useChatStore from '@/store/chat';
 import useUserStore from '@/store/user';
 
@@ -75,7 +73,7 @@ const ActivityDetail: React.FC = () => {
     if (loading) {
         return (
             <Layout>
-                <Navbar title="活动详情" left={<ArrowLeftIcon className="w-5 h-5" />} onClickLeft={handleBack} />
+                <Navbar title="活动详情" onClickLeft={handleBack} />
                 <View className="flex-1 flex items-center justify-center">
                     <Text className="text-gray-400">加载中...</Text>
                 </View>
@@ -86,7 +84,7 @@ const ActivityDetail: React.FC = () => {
     if (!activity) {
         return (
             <Layout>
-                <Navbar title="活动详情" left={<ArrowLeftIcon className="w-5 h-5" />} onClickLeft={handleBack} />
+                <Navbar title="活动详情" onClickLeft={handleBack} />
                 <View className="flex-1 flex items-center justify-center">
                     <Text className="text-gray-400">活动不存在</Text>
                 </View>
@@ -96,7 +94,7 @@ const ActivityDetail: React.FC = () => {
 
     return (
         <Layout className="bg-white px-[8px] pt-[60px]">
-            <Navbar title="活动详情" left={<ArrowLeftIcon className="w-5 h-5" />} onClickLeft={handleBack} />
+            <Navbar title="活动详情" onClickLeft={handleBack} />
             <ScrollView className="flex-1" scrollY>
                 {/* 图片区域 */}
                 {activity.image && activity.image.length > 0 && (
@@ -145,7 +143,7 @@ const ActivityDetail: React.FC = () => {
                     <View className="bg-gray-50 rounded-lg p-[16px] mb-[20px]">
                         {activity.location && (
                             <View className="flex items-start gap-[12px] mb-[12px]">
-                                <MapPinIcon className="w-[20px] h-[20px] text-primary flex-shrink-0 mt-[2px]" />
+                                <Text className="iconfont icon-location w-[20px] h-[20px] text-primary flex-shrink-0 mt-[2px]"></Text>
                                 <View className="flex-1">
                                     <Text className="text-[14px] text-gray-500 mb-[4px] block">活动地点</Text>
                                     <Text className="text-[16px] text-gray-800">{activity.location.address || `${activity.location.city}`}</Text>
@@ -154,7 +152,7 @@ const ActivityDetail: React.FC = () => {
                         )}
 
                         <View className="flex items-start gap-[12px] mb-[12px]">
-                            <ClockIcon className="w-[20px] h-[20px] text-primary flex-shrink-0 mt-[2px]" />
+                            <Text className="iconfont icon-time w-[20px] h-[20px] text-primary flex-shrink-0 mt-[2px]"></Text>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-gray-500 mb-[4px] block">发布时间</Text>
                                 <Text className="text-[16px] text-gray-800">
@@ -165,7 +163,7 @@ const ActivityDetail: React.FC = () => {
 
                         {activity.needPartner && (
                             <View className="flex items-start gap-[12px]">
-                                <UserGroupIcon className="w-[20px] h-[20px] text-primary flex-shrink-0 mt-[2px]" />
+                                <Text className="iconfont icon-team w-[20px] h-[20px] text-primary flex-shrink-0 mt-[2px]"></Text>
                                 <View className="flex-1">
                                     <Text className="text-[14px] text-gray-500 mb-[4px] block">需要伙伴</Text>
                                     <Text className="text-[16px] text-gray-800">是</Text>

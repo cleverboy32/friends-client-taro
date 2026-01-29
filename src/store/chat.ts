@@ -76,9 +76,10 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
             const response = await getChatListApi(userId);
             const chatUsers = response.list
             set(state => {
-                const newChats = chatUsers.filter((item) => state.chatList.findIndex(oldChat => oldChat.chatId === item.chatId) === -1);
-
-                return [...newChats, ...state.chatList];
+                const newChats = chatUsers.filter((item) => state.chatList.findIndex(oldChat => oldChat.chatId === item.chatId && oldChat.chatId) === -1);
+                return {
+                    chatList: [...newChats, ...state.chatList]
+                }
             });
         } catch (error) {
             console.error('Failed to fetch chat list:', error);
@@ -135,7 +136,7 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
             createdAt: new Date(),
             hasRead: false,
             fromUser: { id: fromId, name: fromUser.name, avatar: fromUser.avatar },
-            toUser: get().chatList.find(c => c.toId === toId)?.toUser || { id: toId, name: 'Unknown' },
+            toUser: get().chatList.find(c => c.toId === toId)?.toUser || get().chatList.find(c => c.fromId === toId)?.fromUser
         };
 
         const wsPayload = message;
@@ -149,11 +150,23 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
             const { chatId } = message;
             const existingMessages = state.chatMessages[chatId] || [];
             const updatedMessages = [...existingMessages, message];
+
+            let newChat;
+
+            if (!state.chatList.find((chat) => chat.chatId === chatId)) {
+                // 还要添加到会话列表
+                newChat = {
+                    ...message,
+                    unRead: 1,
+                }
+            }
+
             return {
                 chatMessages: {
                     ...state.chatMessages,
                     [chatId]: updatedMessages,
                 },
+                chatList: newChat ? [newChat, ...state.chatList] : state.chatList
             };
         });
     }
@@ -161,7 +174,7 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
     {
         name: 'chat-storage',
         storage: createJSONStorage(() => taroStorage),
-        partialize: (state) => ({ chatList: state.chatList, chatMessages: state.chatMessages }),
+        partialize: (state) => ({ isLoading: false }),
     }
 ));
 

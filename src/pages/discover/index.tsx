@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import Map, { MAP_STYLES } from '../../components/Map';
 import ActivityCard, { type Activity } from '@/components/ActivityCard';
 import { getActivityList } from '@/api/activity';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import type { ActivityQueryParams } from '@/types/activity';
 import type { AutoComplete } from '@/types/map';
 import BottomBar from '@/components/BottomBar';
-import Navbar from '@/components/Navbar';
 import Layout from '@/components/Layout';
 
 const DiscoverPage: React.FC = () => {
@@ -89,10 +86,13 @@ const DiscoverPage: React.FC = () => {
     // 获取活动数据
     useEffect(() => {
         fetchActivities();
-    }, [filter]);
+    }, [filter, fetchActivities]);
 
-
-
+    Taro.usePullDownRefresh(async () => {
+        page.current = 1; // 重置页码
+        await fetchActivities();
+        Taro.stopPullDownRefresh(); // 停止下拉刷新动画
+    });
 
     return (
         <Layout className=" bg-white overflow-hidden h-[100vh]">

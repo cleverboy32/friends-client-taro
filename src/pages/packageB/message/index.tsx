@@ -2,8 +2,6 @@ import useChatStore from '@/store/chat';
 import { View, Text, ScrollView, Input, Button, Image } from '@tarojs/components';
 import Taro, { useRouter, useDidShow, useDidHide } from '@tarojs/taro';
 import { useEffect, useState, useMemo, useRef } from 'react';
-import Navbar from '@/components/Navbar';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Layout from '@/components/Layout';
 import { ChatUser } from '@/types/chat';
 import useUserStore from '@/store/user';
@@ -63,7 +61,12 @@ const MessagePage = () => {
 
     useEffect(() => {
         const { toId } = router.params;
-        const user = chatList.find((chat) => Number(toId) === chat.toUser?.id)?.toUser;
+        const chat = chatList.find((chat) => Number(toId) === chat.toId || Number(toId) === chat.fromId);
+
+        if (!chat) {
+            return;
+        }
+        const user = chat.toId === Number(toId) ? chat.toUser : chat.fromUser;
         setToUser(user);
     }, [router.params, chatList]);
     
@@ -93,7 +96,7 @@ const MessagePage = () => {
     const defaultAvatar = 'https://via.placeholder.com/40';
 
     return (
-        <Layout className="px-[8px] bg-white h-[100vh] overflow-hidden">
+        <Layout className="px-[8px] bg-white h-[100vh] overflow-hidden" showBottomSafeArea>
             {/* <Navbar title={toUser?.name} left={<ArrowLeftIcon className="w-5 h-5" />} onClickLeft={handleBack} /> */}
             <ScrollView
                 className="flex-1 overflow-y-auto box-border"

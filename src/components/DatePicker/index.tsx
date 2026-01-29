@@ -8,12 +8,6 @@ import {
     getMonthName,
     getWeekDays,
 } from '../../utils/date';
-import {
-    CalendarIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    XCircleIcon,
-} from '@heroicons/react/24/outline';
 import { Popover, PopoverPanel, PopoverButton } from '@headlessui/react';
 import { createPortal } from 'react-dom';
 
@@ -53,7 +47,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedValue, setSelectedValue] = useState<DateValue | DateRange>(
-        value ?? defaultValue ?? (mode === 'single' ? null : [null, null]),
+        value || defaultValue || (mode === 'single' ? null : [null, null]),
     );
     const [hoverDate, setHoverDate] = useState<Date | null>(null);
     const [panelPosition, setPanelPosition] = useState({ top: 0, left: 0 });
@@ -354,11 +348,11 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                                             handleClear(e);
                                         }}
                                         className="text-gray-400 hover:text-dark-primary transition-colors">
-                                        <XCircleIcon className="h-4 w-4" />
+                                        <Text className="iconfont icon-close h-4 w-4"></Text>
                                     </button>
                                 ) : (
                                     <div className="text-gray-400">
-                                        <CalendarIcon className="h-4 w-4 text-primary" />
+                                        <Text className="iconfont icon-calendar h-4 w-4 text-primary"></Text>
                                     </div>
                                 )}
                             </div>
@@ -379,7 +373,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                                             <button
                                                 onClick={() => navigateMonth('prev')}
                                                 className="p-1 hover:text-dark-primary ">
-                                                <ChevronLeftIcon className="h-4 w-4" />
+                                                <Text className="iconfont icon-arrow-left h-4 w-4"></Text>
                                             </button>
 
                                             <div className="text-sm font-medium">
@@ -390,7 +384,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                                             <button
                                                 onClick={() => navigateMonth('next')}
                                                 className="p-1 hover:text-dark-primary rounded">
-                                                <ChevronRightIcon className="h-4 w-4" />
+                                                <Text className="iconfont icon-arrow-right h-4 w-4"></Text>
                                             </button>
                                         </div>
 

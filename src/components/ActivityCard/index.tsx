@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import { UserGroupIcon } from '@heroicons/react/24/outline';
 
 interface Activity {
     id: string;
@@ -82,8 +81,8 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity, onClick, classNam
                     </View>
 
                     <View className="flex items-center gap-2 text-gray-500">
-                        <UserGroupIcon className="w-[18px] h-[18px] " />
-                        <Text className="text-sm font-medium ">{activity.jionPeople ?? 0}</Text>
+                        <Text className="iconfont icon-team w-[18px] h-[18px]"></Text>
+                        <Text className="text-sm font-medium ">{activity.jionPeople || 0}</Text>
                     </View>
                 </View>
             </View>

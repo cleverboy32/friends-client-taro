@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
-import { HomeIcon, PlusIcon, BellIcon, UserIcon } from '@heroicons/react/24/outline';
 import useUserStore from '@/store/user';
 
 type NavKey = 'discover' | 'publish' | 'notifications' | 'profile';
@@ -28,9 +27,9 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
             label: '发现',
             path: '/pages/discover/index',
             icon: (active) => (
-                <HomeIcon
-                    className={`w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
-                />
+                <Text
+                    className={`iconfont icon-dza-zhuyeshouye w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
+                ></Text>
             ),
         },
         {
@@ -38,9 +37,9 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
             label: '发布',
             path: '/pages/packageA/PostActivity/index',
             icon: (active) => (
-                <PlusIcon
-                    className={`w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
-                />
+                <Text
+                    className={`iconfont icon-dzbianji w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
+                ></Text>
             ),
             requiresAuth: true,
         },
@@ -49,9 +48,9 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
             label: '通知',
             path: '/pages/packageB/notifications/index',
             icon: (active) => (
-                <BellIcon
-                    className={`w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
-                />
+                <Text
+                    className={`iconfont icon-dzxiaoxi w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
+                ></Text>
             ),
             requiresAuth: true,
         },
@@ -60,9 +59,9 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
             label: '我',
             path: userInfo ? '/pages/person/index' : '/pages/login/index',
             icon: (active) => (
-                <UserIcon
-                    className={`w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
-                />
+                <Text
+                    className={`iconfont icon-dzyonghu w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
+                ></Text>
             ),
         },
     ];
@@ -88,7 +87,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
         let height = 0;
         if (typeof Taro.getWindowInfo === 'function') {
             const { safeArea, screenHeight } = Taro.getWindowInfo();
-            height = screenHeight - (safeArea?.bottom ?? 0);
+            height = screenHeight - (safeArea?.bottom || 0);
         }
         console.log(height)
         setBottomHeight(height);

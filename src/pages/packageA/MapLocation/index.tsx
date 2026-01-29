@@ -9,7 +9,7 @@ import {
     Map,
     CoverView,
 } from '@tarojs/components';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+
 import Layout from '@/components/Layout';
 
 interface SearchResult {
@@ -311,7 +311,7 @@ const MapLocation: React.FC = () => {
                 <View
                     className="flex items-center"
                     onClick={handleBack}>
-                    <ArrowLeftIcon className="w-4 h-4 mr-1.5" />
+                    <Text className="iconfont icon-arrow-left w-4 h-4 mr-1.5"></Text>
                     <Text className="text-base font-medium">选择地点</Text>
                 </View>
             </View>
