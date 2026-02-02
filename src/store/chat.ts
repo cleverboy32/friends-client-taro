@@ -11,11 +11,13 @@ interface ChatState {
     chatList: ChatUnreadResponse['list'];
     chatMessages: Record<string, Message[]>;
     isLoading: boolean;
-    addOrUpdateChatUser: (user: { id: number; name: string; avatar?: string }, fromUser: Pick<UserInfo, 'id' | 'name'>) => void;
+    addOrUpdateChatUser: (user: { id: number; name: string; avatar?: string }, currentUserId: number) => void;
     getChatList: (userId: number) => Promise<void>;
     getChatMessage: (params: ChatQuery) => Promise<void>;
     sendMessage: (params: { toId: number, content: string }, fromUser: Pick<UserInfo, 'id' | 'name' | 'avatar'>) => void;
-    addMessage: (message: Message) => void;
+    addMessage: (message: Message, fromSocket: boolean) => void;
+    clearUnread: (chatId: string) => void;
+    deleteChat: (chatUserId: number) => void;
 }
 
 const taroStorage = {
@@ -40,28 +42,22 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
     chatMessages: {},
     isLoading: false,
 
-    addOrUpdateChatUser: (user, fromUser) => {
+    addOrUpdateChatUser: (user, currentUserId) => {
         set(state => {
-            const existingUser = state.chatList.find(u => u.toId === user.id);
+            const existingUser = state.chatList.find(item =>  item.chatUser.id === user.id);
             if (existingUser) {
                 // Move existing user to the top
-                const otherUsers = state.chatList.filter(u => u.toId !== user.id);
+                const otherUsers = state.chatList.filter(item => item.chatUser.id !== user.id);
                 return { chatList: [existingUser, ...otherUsers] };
             } else {
                 // Add new user to the top
                 const newUser = {
-                    toId: user.id,
-                    toUser: {
+                    chatUser: {
                         id: user.id,
                         name: user.name,
                         avatar: user.avatar,
                     },
-                    fromId: fromUser.id,
-                    fromUser: {
-                        id: fromUser.id,
-                        name: fromUser.name,
-                    },
-                    chatId: [user.id, fromUser.id].sort((a,b) => a-b).join('-'),
+                    chatId: [user.id, currentUserId].sort((a,b) => a-b).join('-'),
                     unRead: 0,
                 };
 
@@ -74,11 +70,17 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
         try {
             set({ isLoading: true });
             const response = await getChatListApi(userId);
-            const chatUsers = response.list
+            const unreadChat = response.list
             set(state => {
-                const newChats = chatUsers.filter((item) => state.chatList.findIndex(oldChat => oldChat.chatId === item.chatId && oldChat.chatId) === -1);
+
+                // 过滤存储的脏数据
+                const oldList = state.chatList.filter((item) => {
+                    return item.chatId && item.chatUser?.id && item.chatUser?.name;
+                });
+
+                const oldChats = oldList.filter((oldChat) => unreadChat.findIndex(chat => chat.chatId === oldChat.chatId) === -1);
                 return {
-                    chatList: [...newChats, ...state.chatList]
+                    chatList: [...unreadChat, ...oldChats]
                 }
             });
         } catch (error) {
@@ -105,7 +107,7 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
                 return {
                     chatMessages: {
                         ...state.chatMessages,
-                        [params.chatId]: updatedMessages,
+                        [params.chatId]: updatedMessages.filter((item) => !!item.id),
                     },
                 };
             });
@@ -126,7 +128,9 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
         const fromId = fromUser.id;
 
         const chatId = [fromId, toId].sort((a,b) => a-b).join('-');
+        console.log(get().chatList)
 
+        // 我发给对方
         const message: Message = {
             id: Date.now().toString(),
             chatId,
@@ -136,17 +140,38 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
             createdAt: new Date(),
             hasRead: false,
             fromUser: { id: fromId, name: fromUser.name, avatar: fromUser.avatar },
-            toUser: get().chatList.find(c => c.toId === toId)?.toUser || get().chatList.find(c => c.fromId === toId)?.fromUser
+            toUser: get().chatList.find(c => c.chatId === chatId)?.chatUser
         };
 
         const wsPayload = message;
         sendWsMessage(JSON.stringify(wsPayload), () => {
-            get().addMessage(message);
+            get().addMessage(message, false);
         });
     },
 
-    addMessage: (message) => {
+    syncMessageId: (msg: { replaceId: string, saveId: string, chatId: string }) => {
         set(state => {
+            const { replaceId, saveId, chatId } = msg;
+            const messages = state.chatMessages[msg.chatId];
+
+            const list = messages.map((item) => {
+                if (item.id === replaceId) {
+                    item.id =  saveId;
+                }
+                return item;
+            })
+            return {
+                chatMessages: {
+                    ...state.chatMessages,
+                    [chatId]: list,
+                },
+            }
+        })
+    },
+
+    addMessage: (message, fromSocket) => {
+        set(state => {
+            // 消息可能是我给对方的，也可能是对方给我的
             const { chatId } = message;
             const existingMessages = state.chatMessages[chatId] || [];
             const updatedMessages = [...existingMessages, message];
@@ -156,7 +181,8 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
             if (!state.chatList.find((chat) => chat.chatId === chatId)) {
                 // 还要添加到会话列表
                 newChat = {
-                    ...message,
+                    chatUser: fromSocket ? message.fromUser : message.toUser,
+                    chatId,
                     unRead: 1,
                 }
             }
@@ -169,12 +195,42 @@ const useChatStore = create<ChatState>()(persist((set, get) => ({
                 chatList: newChat ? [newChat, ...state.chatList] : state.chatList
             };
         });
+    },
+
+    clearUnread: (chatId: string) => {
+        let chatUser
+        set(state => ({
+            chatList: state.chatList.map(chat => {
+                if (chat.chatId === chatId) {
+                    chatUser = chat.chatUser
+                }
+                return chat.chatId === chatId ? { ...chat, unRead: 0 } : chat
+            }),
+        }));
+
+        sendWsMessage(JSON.stringify({ type: 'readMessage', chatId, fromId: chatUser.id }));
+    },
+    deleteChat: (chatUserId: number) => {
+        set(state => {
+            const chatToDelete = state.chatList.find(chat => chat.chatUser.id === chatUserId);
+            if (!chatToDelete) {
+                return state; // No chat found, return current state
+            }
+            const newChatList = state.chatList.filter(chat => chat.chatUser.id !== chatUserId);
+            const newChatMessages = { ...state.chatMessages };
+            delete newChatMessages[chatToDelete.chatId];
+
+            return {
+                chatList: newChatList,
+                chatMessages: newChatMessages,
+            };
+        });
     }
 }),
     {
         name: 'chat-storage',
         storage: createJSONStorage(() => taroStorage),
-        partialize: (state) => ({ isLoading: false }),
+        partialize: (state) => ({ chatList: state.chatList }),
     }
 ));
 

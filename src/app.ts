@@ -8,7 +8,7 @@ import Taro from '@tarojs/taro';
 
 function App({ children }: PropsWithChildren<any>) {
     const { getUserInfo } = useUserStore();
-    const { getChatList, addMessage } = useChatStore();
+    const { getChatList, addMessage, syncMessageId } = useChatStore();
 
     useLaunch(async () => {
         try {
@@ -25,7 +25,7 @@ function App({ children }: PropsWithChildren<any>) {
                 });
             }
         } catch (error) {
-            console.error('Failed to initialize app:', error);
+            console.error('Failed to initialize app:', error.msg);
         }
     });
 
@@ -37,9 +37,13 @@ function App({ children }: PropsWithChildren<any>) {
                 console.log(parsedMessage);
 
                 // 根据消息类型更新 store
-                if (parsedMessage.chatId) {
-                    addMessage(parsedMessage);
+                if (parsedMessage.type === 'syncMsgId') {
+                    syncMessageId(parsedMessage);
+                } else if (parsedMessage.chatId) {
+                    addMessage(parsedMessage, true);
                 }
+
+                
             } catch (error) {
                 console.error('Failed to parse WebSocket message:', error);
             }

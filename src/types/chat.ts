@@ -15,7 +15,7 @@ export interface ChatQuery {
 export interface ChatUser {
     id: number;
     name: string;
-    avatar?: string;
+    avatar: string;
 }
 
 export interface Message {
@@ -41,10 +41,7 @@ export interface ChatResponse {
 
 export interface ChatUnreadResponse {
     list: {
-        fromId: number;
-        fromUser: ChatUser;
-        toId: number;
-        toUser: ChatUser;
+        chatUser: ChatUser;
         chatId: string;
         unRead: number;
     }[];

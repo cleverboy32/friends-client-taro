@@ -169,6 +169,25 @@ export const addMonths = (date: Date, months: number): Date => {
  */
 export const addYears = (date: Date, years: number): Date => {
     const result = new Date(date);
-    result.setFullYear(result.getFullYear() + years);
     return result;
 };
+
+/**
+ * 格式化时间为指定格式
+ * @param date 日期对象
+ * @param format 格式字符串，默认为 'HH:mm'
+ * @returns 格式化后的时间字符串
+ */
+export const formatTime = (
+    date: Date,
+    format: string = 'HH:mm',
+): string => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return format
+        .replace('HH', hours)
+        .replace('mm', minutes)
+        .replace('ss', seconds);
+};
+

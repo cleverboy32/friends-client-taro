@@ -149,77 +149,75 @@ const PersonPage: React.FC = () => {
     ];
 
     return (
-        <Layout>
-            <View className="flex flex-col pb-[140px] flex-1 px-[24px]">
-                <View className="pb-[24px]">
-                    <View>
-                        <View className="px-[28px] py-[26px] flex items-center gap-[24px]">
-                            <View
-                                className="w-[160px] h-[160px] rounded-full bg-[#f4f6fb] flex items-center justify-center overflow-hidden"
-                                onClick={handleAvatarClick}>
-                                {userInfo?.avatar ? (
-                                    <Image
-                                        src={userInfo.avatar}
-                                        mode="aspectFill"
-                                        className="w-full h-full rounded-full"
-                                    />
-                                ) : (
-                                    <Text className="text-[#9aa6be] text-[40px]">🙂</Text>
-                                )}
-                            </View>
+        <Layout className=" bg-white overflow-hidden h-[100vh]">
+            <View className="pb-[24px]">
+                <View>
+                    <View className="px-[28px] py-[26px] flex items-center gap-[24px]">
+                        <View
+                            className="w-[160px] h-[160px] rounded-full bg-[#f4f6fb] flex items-center justify-center overflow-hidden"
+                            onClick={handleAvatarClick}>
+                            {userInfo?.avatar ? (
+                                <Image
+                                    src={userInfo.avatar}
+                                    mode="aspectFill"
+                                    className="w-full h-full rounded-full"
+                                />
+                            ) : (
+                                <Text className="text-[#9aa6be] text-[40px]">🙂</Text>
+                            )}
+                        </View>
 
-                            <View className="flex-1 gap-[24px] mt-[32px]">
-                                <View className="ml-[48px]">
-                                    <Text className="text-[#1f2433] text-[32px] font-bold">
-                                        {userInfo?.name || 'WYZ'}
-                                    </Text>
-                                    <Text className="text-[#5b6474] text-[26px] mt-[6px]">
-                                        {userInfo?.bio || '(๑´0`๑)ﾉﾞ'}
-                                    </Text>
-                                    <Text className="text-[26px] mt-[10px]">🙇🏻‍♀️</Text>
-                                </View>
-                                <View className="flex items-center justify-around  py-[18px]">
-                                    {stats.map((item) => (
-                                        <View
-                                            key={item.label}
-                                            className="text-center">
-                                            <Text className="block text-[#2f3847] text-[30px] font-bold">
-                                                {item.value}
-                                            </Text>
-                                            <Text className="text-[#9097a8] text-[24px]">
-                                                {item.label}
-                                            </Text>
-                                        </View>
-                                    ))}
-                                </View>
+                        <View className="flex-1 gap-[24px] mt-[32px]">
+                            <View className="ml-[48px]">
+                                <Text className="text-[#1f2433] text-[32px] font-bold">
+                                    {userInfo?.name || 'WYZ'}
+                                </Text>
+                                <Text className="text-[#5b6474] text-[26px] mt-[6px]">
+                                    {userInfo?.bio || '(๑´0`๑)ﾉﾞ'}
+                                </Text>
+                                <Text className="text-[26px] mt-[10px]">🙇🏻‍♀️</Text>
+                            </View>
+                            <View className="flex items-center justify-around  py-[18px]">
+                                {stats.map((item) => (
+                                    <View
+                                        key={item.label}
+                                        className="text-center">
+                                        <Text className="block text-[#2f3847] text-[30px] font-bold">
+                                            {item.value}
+                                        </Text>
+                                        <Text className="text-[#9097a8] text-[24px]">
+                                            {item.label}
+                                        </Text>
+                                    </View>
+                                ))}
                             </View>
                         </View>
                     </View>
                 </View>
+            </View>
 
-                <View className="flex-1 pt-[40px] pb-[140px] border-t border-[#f2f4f8]">
-                    <View className="flex items-center gap-[36px] text-[28px] text-[#9aa3b6]">
-                        {[
-                            { id: 'post', label: '发布' },
-                            { id: 'join', label: '参与' },
-                            { id: 'collect', label: '收藏' },
-                        ].map((tab) => (
-                            <View
-                                key={tab.id}
-                                className="relative pb-[12px]"
-                                onClick={() => setActiveTab(tab.id as typeof activeTab)}>
-                                <Text className={activeTab === tab.id ? 'text-[#f5a623]' : ''}>
-                                    {tab.label}
-                                </Text>
-                                {activeTab === tab.id && (
-                                    <View className="absolute left-0 right-0 -bottom-[6px] h-[6px] rounded-full bg-[#f5a623]" />
-                                )}
-                            </View>
-                        ))}
+            <View className="flex items-center gap-[36px] px-[24px] text-[28px] text-[#9aa3b6]">
+                {[
+                    { id: 'post', label: '发布' },
+                    { id: 'join', label: '参与' },
+                    { id: 'collect', label: '收藏' },
+                ].map((tab) => (
+                    <View
+                        key={tab.id}
+                        className="relative pb-[12px]"
+                        onClick={() => setActiveTab(tab.id as typeof activeTab)}>
+                        <Text className={activeTab === tab.id ? 'text-[#f5a623]' : ''}>
+                            {tab.label}
+                        </Text>
+                        {activeTab === tab.id && (
+                            <View className="absolute left-0 right-0 -bottom-[6px] h-[6px] rounded-full bg-[#f5a623]" />
+                        )}
                     </View>
+                ))}
+            </View>
 
-                    <View className="mt-[24px]">{renderTabContent()}</View>
-                </View>
+            <View className="flex-1 pt-[40px] pb-[140px] border-t border-[#f2f4f8] overflow-y-auto">
+                <View className="mt-[24px]">{renderTabContent()}</View>
             </View>
 
             <BottomBar activeKey="profile" />

@@ -74,13 +74,13 @@ function scheduleReconnect(): void {
     }, RECONNECT_INTERVAL) as unknown as number; // Node.js setTimeout returns NodeJS.Timeout, Browser returns number
 }
 
-export function sendMessage(message: string, successCallback): void {
+export function sendMessage(message: string, successCallback?: () => void ): void {
     // readyState: 0-CONNECTING, 1-OPEN, 2-CLOSING, 3-CLOSED
     if (ws && ws.readyState === 1 /* OPEN */) {
         ws.send({
             data: message,
             success: () => {
-                successCallback();
+                successCallback?.();
                 console.log('WebSocket Sent:', message);
             },
             fail: (error) => {

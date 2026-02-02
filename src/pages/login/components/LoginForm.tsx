@@ -15,6 +15,7 @@ export default memo(function LoginForm() {
     });
     const [avatarUrl, setAvatarUrl] = useState('https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'); // 默认头像
     const { login, isLoading } = useUserStore();
+    const [agreementsAccepted, setAgreementsAccepted] = useState(false);
 
     const onChooseAvatar = (e) => {
         const { avatarUrl: tempAvatarUrl } = e.detail;
@@ -78,6 +79,14 @@ export default memo(function LoginForm() {
             });
             return false;
         }
+        if (!agreementsAccepted) {
+            Taro.showToast({
+                title: '请阅读并同意服务协议和隐私政策',
+                icon: 'none',
+                duration: 2000,
+            });
+            return false;
+        }
         return true;
     };
 
@@ -98,6 +107,14 @@ export default memo(function LoginForm() {
         } catch (error) {
             console.error('登录失败:', error);
         }
+    };
+
+    const goToServiceAgreement = () => {
+        Taro.navigateTo({ url: '/pages/packageA/serviceAgreement/index' });
+    };
+
+    const goToPrivacyPolicy = () => {
+        Taro.navigateTo({ url: '/pages/packageA/privacyPolicy/index' });
     };
 
     return (
@@ -143,12 +160,30 @@ export default memo(function LoginForm() {
                 />
             </View>
 
+            <View className="mt-6 text-xs text-gray-500">
+                <View className="flex items-center" onClick={() => setAgreementsAccepted(!agreementsAccepted)}>
+                    <View className="w-4 h-4 border border-gray-400 rounded-sm flex items-center justify-center mr-2">
+                        {agreementsAccepted && <View className="w-2.5 h-2.5 bg-green-500 rounded-sm" />}
+                    </View>
+                    <Text>
+                        我已阅读并同意
+                        <Text className="text-blue-500" onClick={(e) => { e.stopPropagation(); goToServiceAgreement(); }}>
+                            《服务协议》
+                        </Text>
+                        和
+                        <Text className="text-blue-500" onClick={(e) => { e.stopPropagation(); goToPrivacyPolicy(); }}>
+                            《隐私政策》
+                        </Text>
+                    </Text>
+                </View>
+            </View>
+
             <View className="text-center">
                 <Button
                     className="w-full bg-gradient-to-r mt-[40px] from-[#b5caa0] to-[#6a8463] text-[#5e3c00] text-[28px] font-semibold py-[20px] rounded-[26px] ]"
                     onClick={onSubmit}
-                    disabled={isLoading}>
-                    {isLoading ? '登录中...' : '登 录'}
+                    disabled={isLoading || !agreementsAccepted}>
+                    {isLoading ? '注册...' : '注 册'}
                 </Button>
             </View>
         </View>

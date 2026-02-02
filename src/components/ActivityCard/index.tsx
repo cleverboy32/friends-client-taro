@@ -49,10 +49,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity, onClick, classNam
                 id: activity.publisherId,
                 name: activity.publisher,
                 avatar: activity.avatar
-            }, {
-                id: userInfo.id,
-                name: userInfo.name,
-            })
+            }, userInfo.id)
             Taro.navigateTo({
                 url: '/pages/packageB/notifications/index',
             });

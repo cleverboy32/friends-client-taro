@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { View, Text } from '@tarojs/components';
 import useUserStore from '@/store/user';
+import useChatStore from '@/store/chat';
 
 type NavKey = 'discover' | 'publish' | 'notifications' | 'profile';
 
@@ -19,7 +20,10 @@ interface BottomBarProps {
 
 const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
     const { userInfo } = useUserStore();
+    const { chatList } = useChatStore();
     const [bottomHeight, setBottomHeight] = useState(0);
+
+    const totalUnread = chatList.reduce((acc, chat) => acc + chat.unRead, 0);
 
     const navItems: NavItem[] = [
         {
@@ -48,9 +52,16 @@ const BottomBar: React.FC<BottomBarProps> = ({ activeKey }) => {
             label: '通知',
             path: '/pages/packageB/notifications/index',
             icon: (active) => (
-                <Text
-                    className={`iconfont icon-dzxiaoxi w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
-                ></Text>
+                <View className="relative">
+                    <Text
+                        className={`iconfont icon-dzxiaoxi w-[28px] h-[28px] ${active ? 'text-[#f5a623]' : 'text-white'}`}
+                    ></Text>
+                    {totalUnread > 0 && (
+                        <View className="absolute top-[-10px] right-[-10px] bg-red-500 text-white text-[16px] rounded-full w-[30px] h-[30px] flex items-center justify-center">
+                            {totalUnread}
+                        </View>
+                    )}
+                </View>
             ),
             requiresAuth: true,
         },

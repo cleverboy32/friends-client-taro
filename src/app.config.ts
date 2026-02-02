@@ -1,5 +1,5 @@
 export default defineAppConfig({
-    pages: ['pages/discover/index', 'pages/login/index', 'pages/person/index'],
+    pages: ['pages/login/index', 'pages/discover/index', 'pages/person/index'],
     subPackages: [
         {
             root: 'pages/packageA',
@@ -7,6 +7,8 @@ export default defineAppConfig({
                 'PostActivity/index',
                 'activityDetail/index',
                 'MapLocation/index',
+                'serviceAgreement/index',
+                'privacyPolicy/index',
             ],
         },
         {
@@ -16,7 +18,7 @@ export default defineAppConfig({
     ],
     window: {
         backgroundTextStyle: 'light',
-        backgroundColor: '#fff',
+        backgroundColor: '#cadcae',
         navigationBarBackgroundColor: '#fff',
         navigationBarTitleText: 'WeChat',
         navigationBarTextStyle: 'black',

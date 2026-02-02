@@ -59,10 +59,7 @@ const ActivityDetail: React.FC = () => {
                 id: activity.author.id,
                 name: activity.author.name,
                 avatar: activity.author.avatar
-            }, {
-                id: userInfo.id,
-                name: userInfo.name
-            })
+            }, userInfo.id)
             Taro.navigateTo({
                 url: '/pages/packageB/notifications/index',
             });
